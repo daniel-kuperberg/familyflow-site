@@ -1,4 +1,4 @@
-import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=7';
+import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=8';
 
 const $ = id => document.getElementById(id);
 const dateFormat = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
@@ -30,7 +30,7 @@ function renderDataNotice() {
   if (!localSchedule) return;
   const names = CHILDREN.filter(child => localSchedule.children.includes(child.id)).map(child => child.name).join(', ');
   notice.replaceChildren(element('span', 'demo-tag', scheduleOrigin === 'hosted' ? 'המערכת המשפחתית' : 'במכשיר הזה'), element('span', '', `המערכת של ${names} · ללא נתוני הדגמה`));
-  $('about-data').textContent = `מוצגת המערכת של ${names}, ${scheduleOrigin === 'hosted' ? 'מהאתר הפרטי שלך' : 'מקובץ שנטען מקומית'}. הילדות שעדיין לא נוספה להן מערכת מסומנות בהתאם.`;
+  $('about-data').textContent = `מוצגת המערכת של ${names}, ${scheduleOrigin === 'hosted' ? 'מהאתר' : 'מקובץ שנטען מקומית'}. הילדות שעדיין לא נוספה להן מערכת מסומנות בהתאם.`;
 }
 
 function renderDays() {
@@ -58,7 +58,10 @@ function renderSummary(items) {
   $('summary-grid').classList.toggle('single', children.length === 1);
   $('summary-grid').replaceChildren(...children.map(child => {
     const count = items.filter(item => item.child === child.id).length;
-    const card = element('div', 'summary-card');
+    const card = element('button', 'summary-card');
+    card.type = 'button';
+    card.setAttribute('aria-label', `הצגת המערכת של ${child.name} ביום ${DAYS[selectedDay]}`);
+    card.addEventListener('click', () => { selectChild(child.id); $(`tab-${child.id}`).focus(); });
     const copy = element('div');
     copy.append(element('p', 'summary-name', child.name), element('p', 'summary-count', loadState !== 'ready' ? '—' : !hasSchedule(child.id) ? 'טרם הוזנה מערכת' : count ? activityCount(count) : $('clubs-only').checked ? 'לא הוזנו חוגים' : localSchedule ? 'לא הוזנו פעילויות' : 'יום פנוי'));
     card.append(childAvatar(child), copy);
@@ -74,7 +77,11 @@ function eventCard(item) {
   icon.setAttribute('aria-hidden', 'true');
   const main = element('div', 'event-main');
   const top = element('div', 'event-top');
-  top.append(element('h4', 'event-title', item.title), element('span', `child-tag ${child.id}`, child.name));
+  const childName = element('button', `child-tag ${child.id}`, child.name);
+  childName.type = 'button';
+  childName.setAttribute('aria-label', `הצגת המערכת של ${child.name} ביום ${DAYS[selectedDay]}`);
+  childName.addEventListener('click', () => { selectChild(child.id); $(`tab-${child.id}`).focus(); });
+  top.append(element('h4', 'event-title', item.title), childName);
   const details = element('p', 'event-details');
   if (item.start !== undefined) {
     const time = element('span', 'event-time', `${item.start}–${item.end}`);

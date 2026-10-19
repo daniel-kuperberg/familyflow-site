@@ -1,9 +1,9 @@
-const CACHE = 'familyflow-demo-v7';
+const CACHE = 'familyflow-demo-v8';
 // Cache only the public application shell and synthetic demo, never arbitrary requests.
-const ASSETS = ['./', './index.html', './styles.css?v=7', './app.js?v=7', './schedule-core.mjs?v=7', './schedule.demo.json', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const ASSETS = ['./', './index.html', './styles.css?v=8', './app.js?v=8', './schedule-core.mjs?v=8', './schedule.demo.json', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 const allowed = new Set(ASSETS.map(path => new URL(path, self.registration.scope).href));
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('familyflow-demo-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));

@@ -7,3 +7,6 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
 .data-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.data-toolbar .demo-notice{margin:0}.data-toolbar button{flex-shrink:0}.import-status{font-size:12px;line-height:1.7;color:var(--green);margin-bottom:16px}.import-status:empty{display:none}.lesson-number{white-space:nowrap}@media(max-width:600px){.data-toolbar{align-items:flex-start;gap:8px}.data-toolbar .demo-notice{flex-wrap:wrap;font-size:10px}.data-toolbar button{font-size:11px}.summary-count{line-height:1.5}}
 .untimed-heading{font-size:12px;font-weight:600;color:var(--muted);padding:16px 0 12px;border-top:1px solid var(--line);margin-top:8px}.time-group.period-only .time-label{direction:rtl;line-height:1.35}.time-group.period-only .event-details{margin-top:4px}
+button.summary-card{width:100%;background:transparent;text-align:right;transition:background-color .15s ease}
+button.summary-card:hover,button.child-tag:hover{background-color:var(--soft)}
+button.child-tag{line-height:1.4}
