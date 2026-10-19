@@ -1,0 +1,240 @@
+{
+  "version": 1,
+  "demo": true,
+  "activities": [
+    {
+      "id": "eden-school-0",
+      "child": "eden",
+      "day": 0,
+      "start": "08:00",
+      "end": "13:30",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "noya-school-0",
+      "child": "noya",
+      "day": 0,
+      "start": "08:00",
+      "end": "13:00",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "tali-school-0",
+      "child": "tali",
+      "day": 0,
+      "start": "08:00",
+      "end": "12:45",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "eden-school-1",
+      "child": "eden",
+      "day": 1,
+      "start": "08:00",
+      "end": "13:30",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "noya-school-1",
+      "child": "noya",
+      "day": 1,
+      "start": "08:00",
+      "end": "13:00",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "tali-school-1",
+      "child": "tali",
+      "day": 1,
+      "start": "08:00",
+      "end": "12:45",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "eden-school-2",
+      "child": "eden",
+      "day": 2,
+      "start": "08:00",
+      "end": "13:30",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "noya-school-2",
+      "child": "noya",
+      "day": 2,
+      "start": "08:00",
+      "end": "13:00",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "tali-school-2",
+      "child": "tali",
+      "day": 2,
+      "start": "08:00",
+      "end": "12:45",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "eden-school-3",
+      "child": "eden",
+      "day": 3,
+      "start": "08:00",
+      "end": "13:30",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "noya-school-3",
+      "child": "noya",
+      "day": 3,
+      "start": "08:00",
+      "end": "13:00",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "tali-school-3",
+      "child": "tali",
+      "day": 3,
+      "start": "08:00",
+      "end": "12:45",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "eden-school-4",
+      "child": "eden",
+      "day": 4,
+      "start": "08:00",
+      "end": "13:30",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "noya-school-4",
+      "child": "noya",
+      "day": 4,
+      "start": "08:00",
+      "end": "13:00",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "tali-school-4",
+      "child": "tali",
+      "day": 4,
+      "start": "08:00",
+      "end": "12:45",
+      "type": "school",
+      "title": "לימודים"
+    },
+    {
+      "id": "eden-activity-0",
+      "child": "eden",
+      "day": 0,
+      "start": "16:00",
+      "end": "17:00",
+      "type": "activity",
+      "title": "חוג אומנות"
+    },
+    {
+      "id": "noya-activity-0",
+      "child": "noya",
+      "day": 0,
+      "start": "16:30",
+      "end": "17:30",
+      "type": "activity",
+      "title": "חוג ריקוד"
+    },
+    {
+      "id": "tali-activity-0",
+      "child": "tali",
+      "day": 0,
+      "start": "17:00",
+      "end": "17:45",
+      "type": "activity",
+      "title": "חוג מוזיקה"
+    },
+    {
+      "id": "eden-activity-1",
+      "child": "eden",
+      "day": 1,
+      "start": "16:00",
+      "end": "17:00",
+      "type": "activity",
+      "title": "חוג שחייה"
+    },
+    {
+      "id": "tali-activity-1",
+      "child": "tali",
+      "day": 1,
+      "start": "16:00",
+      "end": "16:45",
+      "type": "activity",
+      "title": "חוג תנועה"
+    },
+    {
+      "id": "noya-activity-2",
+      "child": "noya",
+      "day": 2,
+      "start": "15:30",
+      "end": "16:30",
+      "type": "activity",
+      "title": "חוג אומנות"
+    },
+    {
+      "id": "eden-activity-2",
+      "child": "eden",
+      "day": 2,
+      "start": "17:00",
+      "end": "18:00",
+      "type": "activity",
+      "title": "חוג מוזיקה"
+    },
+    {
+      "id": "tali-activity-3",
+      "child": "tali",
+      "day": 3,
+      "start": "16:00",
+      "end": "16:45",
+      "type": "activity",
+      "title": "חוג מוזיקה"
+    },
+    {
+      "id": "noya-activity-3",
+      "child": "noya",
+      "day": 3,
+      "start": "17:00",
+      "end": "18:00",
+      "type": "activity",
+      "title": "חוג ריקוד"
+    },
+    {
+      "id": "eden-activity-4",
+      "child": "eden",
+      "day": 4,
+      "start": "16:00",
+      "end": "17:00",
+      "type": "activity",
+      "title": "חוג שחייה"
+    },
+    {
+      "id": "noya-activity-4",
+      "child": "noya",
+      "day": 4,
+      "start": "16:30",
+      "end": "17:30",
+      "type": "activity",
+      "title": "חוג יצירה"
+    }
+  ]
+}
