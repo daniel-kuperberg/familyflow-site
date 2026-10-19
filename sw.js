@@ -11,6 +11,10 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !allowed.has(event.request.url)) return;
   event.respondWith(caches.open(CACHE).then(async cache => {
+    if (event.request.mode === 'navigate') {
+      try { return await fetch(event.request); }
+      catch { return cache.match(event.request); }
+    }
     const cached = await cache.match(event.request);
     return cached || fetch(event.request);
   }));

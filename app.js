@@ -260,5 +260,7 @@ async function loadSchedule() {
 
 loadSchedule();
 if ('serviceWorker' in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register('./sw.js').catch(() => { /* Online use remains available if installation is unsupported. */ });
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+    .then(registration => registration.update())
+    .catch(() => { /* Online use remains available if installation is unsupported. */ });
 }
