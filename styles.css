@@ -10,3 +10,13 @@
 button.summary-card{width:100%;background:transparent;text-align:right;transition:background-color .15s ease}
 button.summary-card:hover,button.child-tag:hover{background-color:var(--soft)}
 button.child-tag{line-height:1.4}
+.top-actions{display:flex;align-items:center;gap:7px}
+.install-button{min-height:38px;border-radius:9px;background:var(--green);color:#fff;padding:8px 13px;font-size:12px;font-weight:700;white-space:nowrap}
+.install-button:hover{background:#254b3d}
+.install-button[hidden]{display:none}
+.install-short{display:none}
+.install-link-label{display:block;font-size:12px;font-weight:700;margin:20px 0 7px}
+.install-link-row{display:flex;gap:8px;align-items:center}
+.install-link-row input{min-width:0;flex:1;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:12px;direction:ltr;text-align:left}
+.install-link-row button{white-space:nowrap}
+@media(max-width:600px){.install-full{display:none}.install-short{display:inline}.install-button{padding:8px 10px}.install-link-row{align-items:stretch;flex-direction:column}.install-link-row button{justify-content:center}}

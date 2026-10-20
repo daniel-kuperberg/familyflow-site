@@ -1,4 +1,4 @@
-import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=8';
+import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=9';
 
 const $ = id => document.getElementById(id);
 const dateFormat = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
@@ -185,6 +185,41 @@ $('today-button').addEventListener('click', () => { calendar = calendarFor(); se
 $('clubs-only').addEventListener('change', render);
 $('about-button').addEventListener('click', () => $('about-dialog').showModal());
 $('close-about').addEventListener('click', () => $('about-dialog').close());
+let installPrompt;
+const installButton = $('install-button');
+const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+installButton.hidden = installed();
+$('install-link').value = new URL('./', location.href).href;
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+});
+window.addEventListener('appinstalled', () => {
+  installPrompt = null;
+  installButton.hidden = true;
+  if ($('install-dialog').open) $('install-dialog').close();
+});
+installButton.addEventListener('click', async () => {
+  if (!installPrompt) { $('install-dialog').showModal(); return; }
+  const prompt = installPrompt;
+  installPrompt = null;
+  try {
+    await prompt.prompt();
+    if ((await prompt.userChoice).outcome === 'accepted') installButton.hidden = true;
+  } catch { $('install-dialog').showModal(); }
+});
+$('close-install').addEventListener('click', () => $('install-dialog').close());
+$('copy-install-link').addEventListener('click', async () => {
+  const link = $('install-link');
+  try {
+    await navigator.clipboard.writeText(link.value);
+    $('install-status').textContent = 'הקישור הועתק.';
+  } catch {
+    link.focus();
+    link.select();
+    $('install-status').textContent = 'הקישור מסומן; אפשר להעתיק אותו.';
+  }
+});
 $('import-button').addEventListener('click', () => $('schedule-file').click());
 $('schedule-file').addEventListener('change', async () => {
   const file = $('schedule-file').files[0];

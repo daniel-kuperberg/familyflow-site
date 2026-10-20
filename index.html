@@ -7,11 +7,12 @@
   <meta name="theme-color" content="#f7f8f4">
   <meta name="description" content="FamilyFlow — מערכת השעות והחוגים של המשפחה, במקום אחד.">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="FamilyFlow">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="stylesheet" href="./styles.css?v=8">
+  <link rel="stylesheet" href="./styles.css?v=9">
   <title>FamilyFlow · היום שלנו</title>
 </head>
 <body>
@@ -22,7 +23,10 @@
         <span class="brand-mark" aria-hidden="true">f<span>f</span></span>
         <span dir="ltr">Family<span class="brand-light">Flow</span></span>
       </a>
-      <button class="icon-button" id="about-button" aria-label="מידע, התקנה ופרטיות">ⓘ</button>
+      <div class="top-actions">
+        <button type="button" class="install-button" id="install-button" aria-label="התקנת האפליקציה"><span class="install-full">התקנת האפליקציה</span><span class="install-short" aria-hidden="true">התקנה</span></button>
+        <button class="icon-button" id="about-button" aria-label="מידע ופרטיות">ⓘ</button>
+      </div>
     </header>
 
     <main>
@@ -73,7 +77,19 @@
     <p>באייפון: פתחו ב־Safari, בחרו שיתוף ואז ״הוסף למסך הבית״. באנדרואיד: בחרו התקנה או הוספה למסך הבית מתפריט הדפדפן, כשהאפשרות זמינה.</p>
     <p class="privacy-note">המערכת המשפחתית נטענת מהאתר הציבורי ללא כניסה לחשבון. כל מי שפותח את הקישור יכול לראות אותה. טעינת קובץ ידנית מחליפה אותה בדפדפן הזה בלבד ואינה משנה את הנתונים באתר. נתוני האתר דורשים חיבור לרשת ואינם נשמרים במטמון לשימוש לא מקוון. שעות וימים מוצגים לפי שעון ישראל.</p>
   </dialog>
+  <dialog id="install-dialog" aria-labelledby="install-title">
+    <div class="dialog-top"><span class="eyebrow" dir="ltr">FAMILYFLOW</span><button type="button" class="icon-button" id="close-install" aria-label="סגירה">×</button></div>
+    <h2 id="install-title">FamilyFlow במסך הבית</h2>
+    <p>פתחו את הקישור בדפדפן של הטלפון, והוסיפו את האפליקציה למסך הבית. היא תיפתח בחלון משלה עם הסמל של FamilyFlow.</p>
+    <h3>באייפון</h3>
+    <p>פתחו ב־Safari, הקישו על שיתוף ואז על ״הוסף למסך הבית״. אם מופיע ״פתח כיישום אינטרנט״, הפעילו אותו ולחצו ״הוסף״.</p>
+    <h3>באנדרואיד</h3>
+    <p>פתחו ב־Chrome והקישו על ״התקנה״ אם היא מוצגת. אפשר גם לפתוח את תפריט ⋮ ולבחור ״התקנת האפליקציה״ או ״הוסף למסך הבית״.</p>
+    <label class="install-link-label" for="install-link">קישור שאפשר לשלוח למשפחה</label>
+    <div class="install-link-row"><input id="install-link" type="url" readonly dir="ltr"><button type="button" class="today-button" id="copy-install-link">העתקת קישור</button></div>
+    <p id="install-status" class="import-status" role="status" aria-live="polite"></p>
+  </dialog>
   <noscript><p class="noscript">יש להפעיל JavaScript בדפדפן כדי להציג את מערכת השעות.</p></noscript>
-  <script type="module" src="./app.js?v=8"></script>
+  <script type="module" src="./app.js?v=9"></script>
 </body>
 </html>
