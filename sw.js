@@ -1,6 +1,6 @@
-const CACHE = 'familyflow-demo-v10';
+const CACHE = 'familyflow-demo-v11';
 // Cache only the public application shell and synthetic demo, never arbitrary requests.
-const ASSETS = ['./', './index.html', './styles.css?v=10', './app.js?v=10', './schedule-core.mjs?v=10', './schedule.demo.json', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
+const ASSETS = ['./', './index.html', './styles.css?v=11', './app.js?v=11', './schedule-core.mjs?v=11', './schedule.demo.json', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 const allowed = new Set(ASSETS.map(path => new URL(path, self.registration.scope).href));
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));

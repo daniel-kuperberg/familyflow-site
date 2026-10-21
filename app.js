@@ -1,4 +1,4 @@
-import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=10';
+import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=11';
 
 const $ = id => document.getElementById(id);
 const dateFormat = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
@@ -236,7 +236,6 @@ $('schedule-file').addEventListener('change', async () => {
     localSchedule = imported;
     activities = imported.activities;
     loadState = 'ready';
-    $('clubs-only').checked = false;
     renderDataNotice();
     selectChild(imported.children.length === 1 ? imported.children[0] : 'all');
     $('import-status').textContent = hostedScheduleUrl ? 'הקובץ נטען לביקור הזה. ברענון תחזור המערכת המעודכנת מהאתר.' : saved ? 'המערכת נטענה ונשמרה בדפדפן הזה.' : 'המערכת נטענה לביקור הנוכחי בלבד. הדפדפן לא אפשר לשמור אותה.';
