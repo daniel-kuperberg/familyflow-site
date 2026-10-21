@@ -1,4 +1,4 @@
-import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=9';
+import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=10';
 
 const $ = id => document.getElementById(id);
 const dateFormat = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
@@ -13,6 +13,7 @@ let localSchedule = null;
 let scheduleOrigin = 'device';
 const hostedScheduleUrl = document.querySelector('meta[name="familyflow-schedule"]')?.content;
 const STORAGE_KEY = 'familyflow-local-schedule-v1';
+const HOSTED_STORAGE_KEY = 'familyflow-hosted-schedule-v1';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -29,8 +30,10 @@ function renderDataNotice() {
   const notice = $('data-notice');
   if (!localSchedule) return;
   const names = CHILDREN.filter(child => localSchedule.children.includes(child.id)).map(child => child.name).join(', ');
-  notice.replaceChildren(element('span', 'demo-tag', scheduleOrigin === 'hosted' ? 'המערכת המשפחתית' : 'במכשיר הזה'), element('span', '', `המערכת של ${names} · ללא נתוני הדגמה`));
-  $('about-data').textContent = `מוצגת המערכת של ${names}, ${scheduleOrigin === 'hosted' ? 'מהאתר' : 'מקובץ שנטען מקומית'}. הילדות שעדיין לא נוספה להן מערכת מסומנות בהתאם.`;
+  const originLabel = scheduleOrigin === 'hosted' ? 'המערכת המשפחתית' : scheduleOrigin === 'hosted-cache' ? 'עותק שמור במכשיר' : 'במכשיר הזה';
+  const originDescription = scheduleOrigin === 'hosted' ? 'מהאתר' : scheduleOrigin === 'hosted-cache' ? 'מנתונים שנשמרו במכשיר; ייתכן שאינם מעודכנים' : 'מקובץ שנטען מקומית';
+  notice.replaceChildren(element('span', 'demo-tag', originLabel), element('span', '', `המערכת של ${names} · ללא נתוני הדגמה`));
+  $('about-data').textContent = `מוצגת המערכת של ${names}, ${originDescription}. הילדות שעדיין לא נוספה להן מערכת מסומנות בהתאם.`;
 }
 
 function renderDays() {
@@ -227,8 +230,8 @@ $('schedule-file').addEventListener('change', async () => {
   try {
     if (file.size > 1024 * 1024) throw new Error('File is too large');
     const imported = validateLocalSchedule(JSON.parse(await file.text()));
-    let saved = true;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(imported)); } catch { saved = false; }
+    let saved = !hostedScheduleUrl;
+    if (saved) try { localStorage.setItem(STORAGE_KEY, JSON.stringify(imported)); } catch { saved = false; }
     scheduleOrigin = 'device';
     localSchedule = imported;
     activities = imported.activities;
@@ -236,7 +239,7 @@ $('schedule-file').addEventListener('change', async () => {
     $('clubs-only').checked = false;
     renderDataNotice();
     selectChild(imported.children.length === 1 ? imported.children[0] : 'all');
-    $('import-status').textContent = saved ? 'המערכת נטענה ונשמרה בדפדפן הזה.' : 'המערכת נטענה לביקור הנוכחי בלבד. הדפדפן לא אפשר לשמור אותה.';
+    $('import-status').textContent = hostedScheduleUrl ? 'הקובץ נטען לביקור הזה. ברענון תחזור המערכת המעודכנת מהאתר.' : saved ? 'המערכת נטענה ונשמרה בדפדפן הזה.' : 'המערכת נטענה לביקור הנוכחי בלבד. הדפדפן לא אפשר לשמור אותה.';
   } catch {
     $('import-status').textContent = 'לא ניתן לטעון את הקובץ. יש לבחור קובץ מערכת תקין; המערכת הקיימת לא שונתה.';
   } finally { $('schedule-file').value = ''; }
@@ -246,45 +249,62 @@ function refreshDate() {
   const next = calendarFor();
   if (next.key !== calendar.key) { calendar = next; selectedDay = next.selectedDay; render(); }
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDate(); });
-window.addEventListener('focus', refreshDate);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { refreshDate(); if (scheduleOrigin === 'hosted-cache') loadSchedule(); } });
+window.addEventListener('focus', () => { refreshDate(); if (scheduleOrigin === 'hosted-cache') loadSchedule(); });
 setInterval(refreshDate, 60000);
 
 async function loadSchedule() {
   if (loading) return;
+  // A file imported during this visit remains selected until the next reload.
+  if (localSchedule && scheduleOrigin === 'device') return;
   loading = true;
   loadState = 'loading';
   render();
   try {
-    if (localSchedule) { activities = localSchedule.activities; loadState = 'ready'; return; }
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    if (hostedScheduleUrl) {
       try {
+        const response = await fetch(hostedScheduleUrl, { cache: 'no-store', credentials: 'same-origin' });
+        if (!response.ok) throw new Error('Could not load hosted schedule');
+        const hosted = validateLocalSchedule(await response.json());
+        // A file imported while the request was running takes precedence for this visit.
+        if (scheduleOrigin !== 'device' || !localSchedule) {
+          scheduleOrigin = 'hosted';
+          localSchedule = hosted;
+          activities = hosted.activities;
+          loadState = 'ready';
+          $('import-status').textContent = '';
+          renderDataNotice();
+        }
+        try { localStorage.setItem(HOSTED_STORAGE_KEY, JSON.stringify(hosted)); } catch { /* Offline copy is optional. */ }
+        return;
+      } catch {
+        try {
+          const stored = localStorage.getItem(HOSTED_STORAGE_KEY);
+          if (stored && (scheduleOrigin !== 'device' || !localSchedule)) {
+            const cached = validateLocalSchedule(JSON.parse(stored));
+            scheduleOrigin = 'hosted-cache';
+            localSchedule = cached;
+            activities = cached.activities;
+            loadState = 'ready';
+            $('import-status').textContent = 'אין חיבור לאתר. מוצג עותק שמור במכשיר; ייתכן שאינו מעודכן.';
+            renderDataNotice();
+            return;
+          }
+        } catch { /* No valid offline copy is available. */ }
+        loadState = localSchedule ? 'ready' : 'error';
+        return;
+      }
+    }
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
         localSchedule = validateLocalSchedule(JSON.parse(stored));
         activities = localSchedule.activities;
         loadState = 'ready';
         renderDataNotice();
         return;
-      } catch { $('import-status').textContent = 'המערכת השמורה לא תקינה. מוצגת הדגמה; אפשר לטעון את הקובץ מחדש.'; }
-    }
-  } catch { /* Storage can be unavailable in restricted browser modes. */ }
-  finally { if (localSchedule) { loading = false; render(); } }
-  if (localSchedule) return;
-  try {
-    if (hostedScheduleUrl) {
-      const response = await fetch(hostedScheduleUrl, { cache: 'no-store', credentials: 'same-origin' });
-      if (!response.ok) throw new Error('Could not load private schedule');
-      const hosted = validateLocalSchedule(await response.json());
-      // A file imported while the request was running takes precedence.
-      if (!localSchedule) {
-        scheduleOrigin = 'hosted';
-        localSchedule = hosted;
-        activities = hosted.activities;
-        loadState = 'ready';
-        renderDataNotice();
       }
-      return;
-    }
+    } catch { $('import-status').textContent = 'המערכת השמורה לא זמינה. מוצגת תוכנית ההדגמה.'; }
     const response = await fetch('./schedule.demo.json');
     if (!response.ok) throw new Error('Could not load demo');
     const demo = validateSchedule(await response.json());
@@ -294,6 +314,7 @@ async function loadSchedule() {
 }
 
 loadSchedule();
+window.addEventListener('online', () => { if (scheduleOrigin === 'hosted-cache') loadSchedule(); });
 if ('serviceWorker' in navigator && window.isSecureContext) {
   navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
     .then(registration => registration.update())
