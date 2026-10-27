@@ -1,4 +1,4 @@
-import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=11';
+import { DAYS, CHILDREN, calendarFor, validateSchedule, validateLocalSchedule, selectActivities, groupByTime } from './schedule-core.mjs?v=12';
 
 const $ = id => document.getElementById(id);
 const dateFormat = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
@@ -252,19 +252,35 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { re
 window.addEventListener('focus', () => { refreshDate(); if (scheduleOrigin === 'hosted-cache') loadSchedule(); });
 setInterval(refreshDate, 60000);
 
+// Right after sign-in the access gateway can answer the first schedule request
+// with a redirect or login page. Keep retrying so a stale offline copy (which
+// may predate newly added clubs) is replaced without waiting for focus events.
+const RETRY_DELAYS = [2000, 5000, 15000, 60000];
+let retryAttempt = 0;
+let retryTimer;
+function retryHostedSchedule() {
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(loadSchedule, RETRY_DELAYS[Math.min(retryAttempt++, RETRY_DELAYS.length - 1)]);
+}
+
 async function loadSchedule() {
   if (loading) return;
   // A file imported during this visit remains selected until the next reload.
   if (localSchedule && scheduleOrigin === 'device') return;
   loading = true;
-  loadState = 'loading';
-  render();
+  // Refresh a displayed offline copy in place instead of blanking the timeline.
+  if (loadState !== 'ready') {
+    loadState = 'loading';
+    render();
+  }
   try {
     if (hostedScheduleUrl) {
       try {
         const response = await fetch(hostedScheduleUrl, { cache: 'no-store', credentials: 'same-origin' });
         if (!response.ok) throw new Error('Could not load hosted schedule');
         const hosted = validateLocalSchedule(await response.json());
+        clearTimeout(retryTimer);
+        retryAttempt = 0;
         // A file imported while the request was running takes precedence for this visit.
         if (scheduleOrigin !== 'device' || !localSchedule) {
           scheduleOrigin = 'hosted';
@@ -277,6 +293,7 @@ async function loadSchedule() {
         try { localStorage.setItem(HOSTED_STORAGE_KEY, JSON.stringify(hosted)); } catch { /* Offline copy is optional. */ }
         return;
       } catch {
+        retryHostedSchedule();
         try {
           const stored = localStorage.getItem(HOSTED_STORAGE_KEY);
           if (stored && (scheduleOrigin !== 'device' || !localSchedule)) {
